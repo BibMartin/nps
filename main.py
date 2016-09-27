@@ -14,7 +14,7 @@ class Data(object):
     def __init__(self, filename):
         self._filename = filename
 
-    def _read_data(self):
+    def get_all(self):
         try:
             fid = open(self._filename)
         except FileNotFoundError as e:
@@ -23,16 +23,16 @@ class Data(object):
         return json.load(fid)
 
     def get(self, key, default=0):
-        data = self._read_data()
+        data = self.get_all()
         return data.get(key, default)
 
     def set(self, key, value):
-        data = self._read_data()
+        data = self.get_all()
         data[key] = value
         json.dump(data, open(self._filename, 'w'))
 
     def incr(self, key, default=0):
-        data = self._read_data()
+        data = self.get_all()
         data[key] = data.get(key, default) + 1
         json.dump(data, open(self._filename, 'w'))
         return data[key]
@@ -52,8 +52,15 @@ class ByColor(tornado.web.RequestHandler):
         value = Data(_DATA_FILE).incr(color)
         self.write("{} : {}\n".format(color, value))
 
+
+class All(tornado.web.RequestHandler):
+    def get(self):
+        value = Data(_DATA_FILE).get_all()
+        self.write("{}\n".format(value))
+
 application = tornado.web.Application([
     (r"/", MainHandler),
+    (r"/all", All),
     (r"/byColor/(.*?)", ByColor),
     ])
 
