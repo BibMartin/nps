@@ -50,7 +50,7 @@ class ByColor(tornado.web.RequestHandler):
         value = Data(_DATA_FILE).incr(color)
         self.write(('<center>'
                     '<h2>You have voted:</h2>'
-                    '<img src="static/{}.png"/><br>'
+                    '<img src="../static/img/{}.png"/><br>'
                     '<h2>Thanks for your feedback.</h2>'
                     '</center>'
                     ).format(color))
