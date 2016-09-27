@@ -5,10 +5,12 @@ import os
 import json
 
 _DATA_FILE = 'data.json'
+_STATIC_PATH = 'static'
 
 class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write("Hello, world\n")
+    def prepare(self):
+        self.redirect('static/index.html', self.request.uri)
+        raise tornado.web.Finish()
 
 class Data(object):
     def __init__(self, filename):
@@ -43,14 +45,13 @@ class ByColor(tornado.web.RequestHandler):
         color = color.lower()
         if color not in ['green', 'yellow', 'orange', 'red']:
             raise tornado.web.HTTPError(400, reason='Unknown color {}'.format(color))
-        value = Data(_DATA_FILE).get(color)
-        self.write("{} : {}\n".format(color, value))
-    def post(self, color):
-        color = color.lower()
-        if color not in ['green', 'yellow', 'orange', 'red']:
-            raise tornado.web.HTTPError(400, reason='Unknown color {}'.format(color))
         value = Data(_DATA_FILE).incr(color)
-        self.write("{} : {}\n".format(color, value))
+        self.write(('<center>'
+                    '<h2>You have voted:</h2>'
+                    '<img src="static/{}.png"/><br>'
+                    '<h2>Thanks for your feedback.</h2>'
+                    '</center>'
+                    ).format(color))
 
 
 class All(tornado.web.RequestHandler):
@@ -62,6 +63,7 @@ application = tornado.wsgi.WSGIApplication([
     (r"/", MainHandler),
     (r"/all", All),
     (r"/byColor/(.*?)", ByColor),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': _STATIC_PATH}),
     ])
 
 if __name__ == "__main__":
