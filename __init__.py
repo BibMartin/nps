@@ -5,7 +5,9 @@ import os
 import json
 
 _DATA_FILE = 'data.json'
-_STATIC_PATH = 'static'
+path = os.path.abspath(os.path.dirname(__file__))
+static_path = os.path.join(path, 'static')
+
 
 class MainHandler(tornado.web.RequestHandler):
     def prepare(self):
@@ -63,7 +65,7 @@ application = tornado.wsgi.WSGIApplication([
     (r"/", MainHandler),
     (r"/all", All),
     (r"/byColor/(.*?)", ByColor),
-    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': _STATIC_PATH}),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_path}),
     ])
 
 if __name__ == "__main__":
