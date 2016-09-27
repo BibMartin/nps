@@ -58,7 +58,7 @@ class All(tornado.web.RequestHandler):
         value = Data(_DATA_FILE).get_all()
         self.write("{}\n".format(value))
 
-application = tornado.web.Application([
+application = tornado.wsgi.WSGIApplication([
     (r"/", MainHandler),
     (r"/all", All),
     (r"/byColor/(.*?)", ByColor),
